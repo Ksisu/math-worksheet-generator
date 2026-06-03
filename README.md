@@ -1,20 +1,26 @@
 # Math worksheet generator
 
-A single, self-contained HTML file that generates printable **A4 math-practice worksheets**
+A single, self-contained HTML file that generates printable **A4/A5 math-practice worksheets**
 for young schoolchildren — multiplication, division, addition, and subtraction — drawn on a
 squared-notebook grid. Open it in a browser, set the parameters, and download a real vector
-PDF. It works fully **offline**: the one dependency (jsPDF) is inlined into the HTML at build
-time.
+PDF. The interface is available in **Hungarian (default) and English**, and it works fully
+**offline**: the one dependency (jsPDF) is inlined into the HTML at build time.
+
+## A note on how this was made
+
+This project is **fully AI-generated** — the application code, this README, the spec, and all
+of the in-app texts and Hungarian/English translations were written by an AI coding assistant.
+Use it as such.
 
 ## Quick start
 
 Just open `index.html` in any modern browser — no server, no install. It's also published at
 **https://ksisu.github.io/math-worksheet-generator/**.
 
-The control panel is on the left, the live A4 preview on the right:
+The control panel is on the left, the live page preview on the right:
 
 - **Generate** — build fresh random problems and preview them.
-- **Download PDF** — save exactly what's on screen as a vector A4 PDF (great for printing).
+- **Download PDF** — save exactly what's on screen as a vector PDF, A4 or A5 (great for printing).
 
 ## Features
 
@@ -26,8 +32,10 @@ The control panel is on the left, the live A4 preview on the right:
   - **× / ÷** — pick which times tables (1–10) to practise; division stays whole-number.
   - **+** — number range `0–10`, `0–20`, or `0–100` (the *answer* stays in range).
   - **−** — the same ranges plus `±10` / `±20` / `±100` (allows negative answers).
+- **Page size** — A4 (default) or A5, selectable in the Layout section.
+- **Languages** — Hungarian (default) or English; the choice is remembered between visits.
 - **Geometry-driven layout** — fixed 5 mm cells; columns and pagination are computed from the
-  page size, distributed evenly across the centered 190 mm grid.
+  chosen page size and distributed evenly across the centered grid (190 mm on A4, 125 mm on A5).
 - **Amount selector** — by number of problems (fills as many pages as needed) or by number of
   full sheets.
 - **Display options:**
@@ -35,6 +43,7 @@ The control panel is on the left, the live A4 preview on the right:
   - Show / hide the squared grid
   - Multiplication symbol `· × *` and division symbol `: ÷ /`
   - Align operators and/or `=` into columns (`=` aligned by default)
+  - Footer with the site link and a QR code (on)
 
 The squared grid, per-cell digit placement, and operator rendering were tuned over many print
 iterations — the printed output is physically accurate (a cell really is 5 mm on paper).

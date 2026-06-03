@@ -139,9 +139,25 @@ right-alignment, and both renderers stay in sync via `layoutSheet`.
 Title, name, date, numbering — **no header at all**. Just the problems. No page-number caption
 either, even across multiple sheets.
 
+### Optional footer (the one exception)
+The single allowed off-grid decoration: an **optional footer** carrying the site link and a QR
+code to it — a Display option (`showFooter`, **on by default**; see §3). It is rendered in the
+**bottom page margin, below the grid** (not on the squared area), centered, in both the preview
+and the PDF. The link is `SITE_URL`; the QR is a precomputed 33 × 33 module matrix (`QR_MATRIX`,
+generated dev-side from `SITE_URL`, error-correction level M) drawn as a small (~10–11 mm) square
+with a light quiet-zone margin — a canvas in the DOM preview, one filled rect per dark module in
+the PDF. When the toggle is off, nothing is drawn there.
+
 ---
 
 ## 3. SETTINGS (control panel)
+
+### Language
+A selector at the top of the panel switches the whole UI — **and the worksheet labels** —
+between **Magyar (Hungarian, the default)** and **English**. Strings live in an `I18N` table
+keyed by language and resolved through a `tr(key)` lookup (English fallback). The choice persists
+in `localStorage` (`mwg-lang`); changing it re-renders all labels live and regenerates the
+preview. (The printed problems themselves are language-neutral digits and symbols.)
 
 ### Task types (one row per operation × variant)
 Four operations — **multiplication (×)**, **division (÷, drawn `:`)**, **addition (+)**,
@@ -201,6 +217,8 @@ problems, no regeneration):
   `÷`, or `/`. The picked symbols are also echoed in the task-row label/hint texts.
 - **Align the operators (+ − · :) in a column** (`alignOps`, **off**) and **Align the = signs in
   a column** (`alignEq`, **on**) — the column-alignment toggles (see "Column alignment" above).
+- **Show a footer with the site link and a QR code** (`showFooter`, **on**) — draws the optional
+  footer in the bottom page margin below the grid (see "Optional footer" in §2).
 
 ---
 
