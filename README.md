@@ -8,7 +8,8 @@ time.
 
 ## Quick start
 
-Just open `math_worksheet_generator.html` in any modern browser — no server, no install.
+Just open `index.html` in any modern browser — no server, no install. It's also published at
+**https://ksisu.github.io/math-worksheet-generator/**.
 
 The control panel is on the left, the live A4 preview on the right:
 
@@ -55,7 +56,7 @@ committed so the file stays offline-standalone; `node_modules/` is gitignored.
 
 | File | Purpose |
 |------|---------|
-| `math_worksheet_generator.html` | The whole app — HTML, CSS, JS, and inlined jsPDF. |
+| `index.html` | The whole app — HTML, CSS, JS, and inlined jsPDF (also the GitHub Pages entry point). |
 | `build.js` | Inlines jsPDF into the HTML for offline use. |
 | `SPEC_math_worksheet_generator.md` | Authoritative spec — especially the exact visual output. |
 | `CLAUDE.md` | Architecture notes and gotchas for working on the code. |

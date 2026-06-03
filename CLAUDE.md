@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A single, self-contained HTML file (`math_worksheet_generator.html`) that generates printable A4 math-practice worksheets (multiplication, division, addition, subtraction) for young children, drawn on a squared-notebook grid. Open the file in a browser to use it — it works fully offline (the one dependency, jsPDF, is inlined into the file at build time).
+A single, self-contained HTML file (`index.html`) that generates printable A4 math-practice worksheets (multiplication, division, addition, subtraction) for young children, drawn on a squared-notebook grid. Open the file in a browser to use it — it works fully offline (the one dependency, jsPDF, is inlined into the file at build time). It is also published via GitHub Pages at https://ksisu.github.io/math-worksheet-generator/ (served from `index.html` on `main`).
 
-- **Run/test:** open `math_worksheet_generator.html` in a browser. The control panel is on the left; **Generate** rebuilds the preview, **Download PDF** saves a real vector PDF.
+- **Run/test:** open `index.html` in a browser. The control panel is on the left; **Generate** rebuilds the preview, **Download PDF** saves a real vector PDF.
 - **Build:** `npm install && npm run build`. `build.js` inlines `node_modules/jspdf/dist/jspdf.umd.min.js` between the `<!-- jspdf:start -->` / `<!-- jspdf:end -->` markers in the HTML (idempotent). Re-run **only** after `npm install` or a jsPDF version bump — editing the app's own JS in the HTML needs no rebuild. The inlined jsPDF blob is committed (that's what keeps the file offline-standalone); `node_modules/` is gitignored.
 - **The output's exact printed look is the product.** The grid size/color, per-cell digit placement, and the answer-space box were tuned over many print iterations. Treat the visual parameters as finalized defaults; the functional code can be reshaped around them. `SPEC_math_worksheet_generator.md` is the authoritative spec — read it before changing layout/print behavior.
 

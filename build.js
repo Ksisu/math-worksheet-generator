@@ -11,7 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const HTML = path.join(__dirname, 'math_worksheet_generator.html');
+const HTML = path.join(__dirname, 'index.html');
 const LIB = path.join(__dirname, 'node_modules', 'jspdf', 'dist', 'jspdf.umd.min.js');
 
 const START = '<!-- jspdf:start -->';

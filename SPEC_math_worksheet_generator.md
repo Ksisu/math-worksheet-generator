@@ -265,6 +265,6 @@ see above. Remaining ideas:)
 ---
 
 ## 7. STARTING FILE
-`math_worksheet_generator.html` is a working reference implementation that realizes
+`index.html` is a working reference implementation that realizes
 all the parameters and features above. Feel free to start from it, or rebuild it from the
 specification.
