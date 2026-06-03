@@ -84,6 +84,7 @@
     border-radius:8px; background:#fff; color:var(--ink); text-align:right;
   }
   .amount-row input[type="number"]:disabled{background:#f1ece2; color:#b3a994;}
+  .amount-row select{font-size:14px; padding:5px 8px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); cursor:pointer;}
   #layoutInfo{font-weight:600; color:#7a7163;}
   .actions{display:flex; flex-direction:column; gap:9px; margin-top:8px;}
   button{
@@ -184,7 +185,7 @@
   }
 
   /* ----------------- PRINTING ----------------- */
-  @page{ size: A4 portrait; margin: 0; }
+  /* the @page paper size lives in its own <style id="pageRule">, updated per page-size choice */
   @media print{
     body{background:#fff;}
     .panel{display:none !important;}
@@ -192,7 +193,7 @@
     .preview-inner{gap:0;}
     .sheet{
       box-shadow:none; margin:0;
-      width:210mm; height:297mm;
+      width: var(--page-w, 210mm); height: var(--page-h, 297mm);
       page-break-after: always;
     }
     .sheet:last-child{page-break-after:auto;}
@@ -246,13 +247,15 @@
   .modal-actions{display:flex; gap:9px;}
   .modal-actions button{flex:1;}
 </style>
+<!-- print paper size; textContent updated in generate() to match the chosen page size -->
+<style id="pageRule">@page{ size: A4 portrait; margin: 0; }</style>
 </head>
 <body>
 <div class="app">
   <!-- ----- CONTROL PANEL ----- -->
   <aside class="panel">
     <h1>Math Worksheet</h1>
-    <p class="sub">Set up the problems, then generate. Use the "Download PDF" button to save an A4 PDF.</p>
+    <p class="sub">Set up the problems, then generate. Use the "Download PDF" button to save a PDF (A4 or A5).</p>
 
     <div class="group">
       <label class="lbl">Problem types</label>
@@ -262,6 +265,13 @@
 
     <div class="group">
       <label class="lbl">Layout</label>
+      <label class="amount-row">
+        <span>Page size</span>
+        <select id="pageSize">
+          <option value="a4" selected>A4 (210 × 297 mm)</option>
+          <option value="a5">A5 (148 × 210 mm)</option>
+        </select>
+      </label>
       <label class="amount-row">
         <input type="radio" name="amountMode" id="modeProblems">
         <span>Number of problems</span>
@@ -1074,6 +1084,10 @@ function buildSheet(problems, cfg, label){
   sheet.className='sheet';
   sheet.style.setProperty('--cell-mm', cfg.cellmm);
   sheet.style.setProperty('--page-margin-left', cfg.marginLeft+'mm');
+  sheet.style.setProperty('--page-w', cfg.pageW+'mm');
+  sheet.style.setProperty('--page-h', cfg.pageH+'mm');
+  sheet.style.width = cfg.pageW+'mm';
+  sheet.style.minHeight = cfg.pageH+'mm';
 
   if(label){
     const tag=document.createElement('div'); tag.className='keytag'; tag.textContent=label;
@@ -1153,7 +1167,7 @@ function renderSheetToPDF(doc, layout, cfg, label, isFirstPage){
     doc.setFont('helvetica','normal');
     doc.setFontSize(10);
     doc.setTextColor(154,145,131); // #9a9183
-    doc.text(label, 210-10, 9, {align:'right'});
+    doc.text(label, cfg.pageW-10, 9, {align:'right'});
   }
 
   // digits / dots / missing-factor boxes
@@ -1193,7 +1207,7 @@ function renderSheetToPDF(doc, layout, cfg, label, isFirstPage){
     doc.setFont('helvetica','normal');
     doc.setFontSize(8);
     const groupW = qrSize + gap + doc.getTextWidth(SITE_URL);
-    const startX = (210 - groupW)/2;          // centre the QR + text group
+    const startX = (cfg.pageW - groupW)/2;     // centre the QR + text group
     const qrY = oy + gridH + 3;               // a few mm below the grid (white page = quiet zone)
     doc.setFillColor(17,17,17);
     for(let r=0;r<QR_MATRIX.length;r++){
@@ -1262,13 +1276,26 @@ const QR_MATRIX = [
 ];
 
 // ---- page geometry (cell fixed at 5 mm) -----------------------------------
-const CELL_MM = 5, USABLE_COLS = 38, GAP = 1, A4_WIDTH_MM = 210;
-// height: A4 297mm − 14mm top − 14mm bottom = 269mm → 53 cell-rows → 27 problem-rows
-//   (totalRows = 2*rows − 1 ≤ 53  ⟹  rows ≤ 27)
-const ROWS_PER_PAGE = Math.floor((Math.floor((297 - 14 - 14) / CELL_MM) + 1) / 2);
+const CELL_MM = 5, GAP = 1, MIN_SIDE_MM = 10, MARGIN_V_MM = 14;
+// Selectable page sizes (portrait). A5 is exactly half of A4; the cell stays 5 mm, so A5
+// simply yields fewer columns/rows. Columns and rows-per-page are derived from the page
+// dimensions below — A4 resolves to the historical 38 cols / 27 rows.
+const PAGE_SIZES = {
+  a4: { label: 'A4', w: 210, h: 297, jsformat: 'a4' },
+  a5: { label: 'A5', w: 148, h: 210, jsformat: 'a5' },
+};
+// usable grid columns: full width minus ~10 mm symmetric side margins, in 5 mm cells
+//   A4: floor((210 − 20)/5) = 38   ·   A5: floor((148 − 20)/5) = 25
+const usableColsFor = w => Math.floor((w - 2*MIN_SIDE_MM) / CELL_MM);
+// problem-rows per page: page height minus 14 mm top/bottom → cell-rows, then totalRows = 2*rows − 1
+//   A4: floor((floor((297 − 28)/5)+1)/2) = 27   ·   A5: floor((floor((210 − 28)/5)+1)/2) = 18
+const rowsPerPageFor = h => Math.floor((Math.floor((h - 2*MARGIN_V_MM) / CELL_MM) + 1) / 2);
 
 // columns are derived from the widest enabled problem block, so a row fits in USABLE_COLS
-function pageGeometry(types, align){
+function pageGeometry(types, align, page){
+  page = page || PAGE_SIZES.a4;
+  const USABLE_COLS = usableColsFor(page.w);
+  const ROWS_PER_PAGE = rowsPerPageFor(page.h);
   // Sheet-wide slot widths used when aligning operators / '=' into fixed columns.
   const OPW  = Math.max(...types.map(t => t.opW));
   const RESW = Math.max(...types.map(t => t.resW));
@@ -1293,6 +1320,7 @@ function readConfig(){
         return {op:t.op, variant:t.variant, tables:t.tables?[...t.tables]:null, range:t.range||null, opW:w.opW, resW:w.resW};
       }),
     cellmm: CELL_MM,
+    pageSize: $('#pageSize').value,
     showOperandBox: $('#showOperandBox').checked,
     showResultBox:  $('#showResultBox').checked,
     showGrid:       $('#showGrid').checked,
@@ -1304,10 +1332,12 @@ function readConfig(){
     marginLeft: 8,   // overridden below to centre the grid horizontally on the page
     marginTop: 14
   };
+  const page = PAGE_SIZES[cfg.pageSize] || PAGE_SIZES.a4;
+  cfg.pageW = page.w; cfg.pageH = page.h; cfg.jsformat = page.jsformat;
   if(cfg.types.length){
-    const g = pageGeometry(cfg.types, {alignOps:cfg.alignOps, alignEq:cfg.alignEq});
+    const g = pageGeometry(cfg.types, {alignOps:cfg.alignOps, alignEq:cfg.alignEq}, page);
     Object.assign(cfg, g); // block, cols, rowsPerPage, perPage
-    cfg.marginLeft = (A4_WIDTH_MM - cfg.gridCols*cfg.cellmm) / 2; // centre the grid horizontally
+    cfg.marginLeft = (cfg.pageW - cfg.gridCols*cfg.cellmm) / 2; // centre the grid horizontally
     if($('#modeProblems').checked){
       cfg.total = Math.max(1, parseInt($('#count').value)||100);
       cfg.pages = Math.ceil(cfg.total / cfg.perPage);
@@ -1328,6 +1358,8 @@ function generate(){
     alert('Turn on at least one task type — pick its times tables (·, :) or a number range (+, −).');
     return;
   }
+  // keep the print paper size in sync with the chosen page size
+  const pr = $('#pageRule'); if(pr){ const p = PAGE_SIZES[cfg.pageSize]||PAGE_SIZES.a4; pr.textContent = `@page{ size: ${p.label} portrait; margin: 0; }`; }
   sheetsEl.innerHTML='';
   lastRender = [];
   for(let pg=0; pg<cfg.pages; pg++){
@@ -1347,7 +1379,8 @@ function downloadPDF(){
   }
   if(!lastRender.length) generate();
   const {jsPDF} = window.jspdf;
-  const doc = new jsPDF({unit:'mm', format:'a4', orientation:'portrait'});
+  const fmt = (lastRender[0] && lastRender[0].cfg.jsformat) || 'a4'; // all pages share one size
+  const doc = new jsPDF({unit:'mm', format:fmt, orientation:'portrait'});
   lastRender.forEach((r,i)=>{
     const layout = layoutSheet(r.problems, r.cfg);
     renderSheetToPDF(doc, layout, r.cfg, r.label, i===0);
@@ -1364,7 +1397,7 @@ function refreshLayoutInfo(){
     const w = widthsFor(t); return {opW:w.opW, resW:w.resW};
   });
   if(!types.length){ $('#layoutInfo').textContent = 'Turn on a task type to see the layout.'; return; }
-  const g = pageGeometry(types, {alignOps:$('#alignOps').checked, alignEq:$('#alignEq').checked});
+  const g = pageGeometry(types, {alignOps:$('#alignOps').checked, alignEq:$('#alignEq').checked}, PAGE_SIZES[$('#pageSize').value]||PAGE_SIZES.a4);
   let amount;
   if(byProblems){
     const total = Math.max(1, parseInt($('#count').value)||100);
@@ -1401,6 +1434,7 @@ function rerenderDisplay(){
     sheetsEl.appendChild(buildSheet(problems, cfg, label));
   }
 }
+$('#pageSize').addEventListener('change', ()=>{ refreshLayoutInfo(); autoGenerate(); });
 $('#modeProblems').addEventListener('change', ()=>{ refreshLayoutInfo(); autoGenerate(); });
 $('#modeSheets').addEventListener('change', ()=>{ refreshLayoutInfo(); autoGenerate(); });
 $('#count').addEventListener('input', refreshLayoutInfo);

@@ -11,8 +11,8 @@ parts can be reshaped freely relative to that.
 ## 1. What the tool does
 
 A single, self-contained HTML file (no build, no server). The user sets the parameters in a
-control panel on the left, presses the **Generate** button, and one or more A4 "sheet"
-previews appear on the right. The **Download PDF** button saves a real vector A4 PDF.
+control panel on the left, presses the **Generate** button, and one or more "sheet"
+previews appear on the right. The **Download PDF** button saves a real vector PDF.
 
 Goal: math-practice sheets (×, ÷, +, −) for young schoolchildren, on a squared-notebook pattern.
 
@@ -23,13 +23,19 @@ Goal: math-practice sheets (×, ÷, +, −) for young schoolchildren, on a squar
 These are the finalized values. Keep them as the defaults.
 
 ### Sheet
-- Page size: **A4 portrait** (210 × 297 mm). `@page { size: A4 portrait; margin: 0; }`
-- Top margin: **14 mm**.
-- Horizontal: the grid is **centered** on the page. The grid is a fixed 38 cells = 190 mm
-  wide, so it sits with **~10 mm** symmetric side margins (`marginLeft = (210 − 38·5) / 2`),
-  computed in `readConfig`. (Earlier versions left-aligned at an 8 mm margin to keep the
-  right edge from running off; that's no longer needed now that the grid is a fixed 190 mm
-  < 210 mm and always fits.)
+- Page size: selectable in the **Layout** section — **A4 portrait** (210 × 297 mm, the default)
+  or **A5 portrait** (148 × 210 mm). The choice (`PAGE_SIZES` table, keyed `a4`/`a5`) drives the
+  jsPDF `format`, the DOM `.sheet` size, and the print `@page` rule (`<style id="pageRule">`,
+  updated in `generate()`).
+- Top/bottom margin: **14 mm** (`MARGIN_V_MM`).
+- Horizontal: the grid is **centered** on the page. Columns and rows-per-page are **derived from
+  the chosen page dimensions**, not hardcoded:
+  - `usableCols = floor((pageW − 2·10) / 5)` → A4 **38** cells (190 mm), A5 **25** cells (125 mm).
+  - `rowsPerPage = floor((floor((pageH − 2·14) / 5) + 1) / 2)` → A4 **27**, A5 **18**.
+  - `marginLeft = (pageW − usableCols·5) / 2` → A4 **10 mm**, A5 **11.5 mm** symmetric side margins,
+    computed in `readConfig`. The grid always fits well within the page width.
+  (Earlier versions left-aligned at an 8 mm margin to keep the right edge from running off; no
+  longer needed now that the grid is centered and always narrower than the page.)
 
 ### Squared grid
 - One cell: **5 × 5 mm** (fixed — the layout is computed from this and the page size).
@@ -75,7 +81,7 @@ Example: `7 · 8 =` with an empty space for the answer. The same shape holds for
   PDF. Note a `−` that is the **negative sign of a result** is *not* an operator: it stays an
   ordinary digit-sized character.
 - Per row, as many blocks as fit the page-width budget — the **column count is computed**, not
-  chosen (`floor((38 + GAP) / BLOCK)`; see Layout below). The columns are **distributed across
+  chosen (`floor((usableCols + GAP) / BLOCK)`; see Layout below). The columns are **distributed across
   the full grid width like CSS `justify-content: space-between`** — first flush-left, last
   flush-right, the leftover columns spread as near-equal **whole-cell** gaps between them (so
   digits stay centered in the squares).
@@ -164,21 +170,24 @@ addition / fill-in-result, range 0–20.
 
 ### Layout (geometry-driven — no manual columns/cell size)
 - **Cell size is fixed at 5 mm.** Not user-adjustable.
-- **Columns are computed**, not chosen: a row fits **38 squares** across (190 mm grid,
-  centered on the page with ~10 mm margins each side). `cols = floor((38 + GAP) / BLOCK)`,
-  ≥ 1. So multiplication (`BLOCK=10`) → **3 columns**; smaller blocks pack more.
-- **Rows per page = 27**, from the page height: `floor((297 − 14 top − 14 bottom) / 5) = 53`
-  cell-rows, and `totalRows = 2·rows − 1 ≤ 53 ⟹ rows ≤ 27`. So **problems-per-page =
-  cols × 27** (e.g. 3 × 27 = 81 for multiplication).
+- **Page size is selectable** (A4 default / A5) — see *Sheet* above. The column and row counts
+  below are derived from the chosen page; values shown are A4, with A5 in parentheses.
+- **Columns are computed**, not chosen: a row fits `usableCols` squares across — **38** (A5: 25),
+  centered on the page. `cols = floor((usableCols + GAP) / BLOCK)`, ≥ 1. So multiplication
+  (`BLOCK=10`) → **3 columns** on A4; smaller blocks/pages pack differently.
+- **Rows per page = 27 (A5: 18)**, from the page height: `floor((pageH − 14 top − 14 bottom) / 5)`
+  cell-rows, and `totalRows = 2·rows − 1 ≤ that ⟹ rows`. So **problems-per-page = cols × rows**
+  (e.g. 3 × 27 = 81 for A4 multiplication).
 - **Amount selector — a toggle with two modes:**
   - **Number of problems** (default, e.g. 100): the app emits `ceil(total / perPage)` pages;
     the last page is partially filled.
   - **Number of sheets** (e.g. 2): each page is filled to capacity, `total = pages × perPage`.
-- Output **paginates** across as many A4 pages as needed; each page prints on its own sheet
+- Output **paginates** across as many pages as needed; each page prints on its own sheet
   (`page-break-after: always`).
-- **The grid always fills the full working area** (38 × 53 squares = 190 × 265 mm) on every
-  page, regardless of how many problems land on it — a partial last page still looks like a
-  complete sheet of squared paper, with the problems in the top-left and empty squares below.
+- **The grid always fills the full working area** (A4: 38 × 53 squares = 190 × 265 mm; A5:
+  25 × 35 = 125 × 175 mm) on every page, regardless of how many problems land on it — a partial
+  last page still looks like a complete sheet of squared paper, with the problems in the top-left
+  and empty squares below.
 
 ### Display options (a popup)
 A **Display options** popup collects the rendering toggles (all live-applied to the existing
@@ -222,8 +231,10 @@ tokensFor(problem, cfg) -> list of cells:
         - 'missing' type: always written out (String(res) carries a leading '-' if negative)
 ```
 
-Page geometry (computed once): `BLOCK = max over enabled types of (2*opW + 2 + resW) + GAP`;
-`cols = floor((38 + GAP) / BLOCK)`; `perPage = cols * 27`. The amount selector then fixes the
+Page geometry (computed once, for the chosen page size): `BLOCK = max over enabled types of
+(2*opW + 2 + resW) + GAP`; `cols = floor((usableCols + GAP) / BLOCK)`; `perPage = cols *
+rowsPerPage`, where `usableCols`/`rowsPerPage` derive from the page (A4: 38/27, A5: 25/18).
+The amount selector then fixes the
 page count (problems-mode: `ceil(total/perPage)`; sheets-mode: the given count), and `generate`
 emits that many pages, slicing the problems across them.
 
