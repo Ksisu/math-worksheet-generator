@@ -112,6 +112,13 @@
     position:absolute; top:6mm; right:10mm; font-size:10pt; color:#9a9183;
     letter-spacing:.04em;
   }
+  /* footer with the site link + QR code, sits in the bottom page margin below the grid */
+  .sheet .footer{
+    position:absolute; left:0; right:0; bottom:5mm;
+    display:flex; justify-content:center; align-items:center; gap:3mm;
+    font-size:8pt; color:#9a9183; letter-spacing:.02em;
+  }
+  .sheet .footer canvas{width:11mm; height:11mm; display:block;}
 
   /* the problem grid: the squared paper is a CSS gradient, the characters are absolutely positioned */
   .grid{
@@ -341,6 +348,10 @@
     <label class="opt" id="alignEqWrap">
       <input type="checkbox" id="alignEq" checked>
       <span>Align the = signs in a column</span>
+    </label>
+    <label class="opt" id="footerWrap">
+      <input type="checkbox" id="showFooter" checked>
+      <span>Show a footer with the site link and a QR code</span>
     </label>
     <div class="modal-actions">
       <button type="button" class="btn-primary" id="dispDone">Done</button>
@@ -1043,6 +1054,20 @@ function layoutSheet(problems, cfg){
 }
 
 // build one sheet (grid) as DOM for the on-screen preview / browser print
+// QR code as a <canvas> for the DOM preview: white background + a 2-module quiet
+// zone, dark modules drawn as filled squares. CSS scales it to a fixed mm size.
+function makeQRCanvas(){
+  const n = QR_MATRIX.length, quiet = 2, dim = n + quiet*2, scale = 8;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = dim*scale;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = '#111';
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++)
+    if(QR_MATRIX[r][c]==='1') ctx.fillRect((c+quiet)*scale, (r+quiet)*scale, scale, scale);
+  return cv;
+}
+
 function buildSheet(problems, cfg, label){
   const sheet = document.createElement('div');
   sheet.className='sheet';
@@ -1091,6 +1116,17 @@ function buildSheet(problems, cfg, label){
   });
 
   sheet.appendChild(grid);
+
+  if(cfg.showFooter){
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    footer.appendChild(makeQRCanvas());
+    const link = document.createElement('span');
+    link.textContent = SITE_URL;
+    footer.appendChild(link);
+    sheet.appendChild(footer);
+  }
+
   return sheet;
 }
 
@@ -1149,6 +1185,24 @@ function renderSheetToPDF(doc, layout, cfg, label, isFirstPage){
       doc.text(pl.ch, cx, cy+dy, {align:'center', baseline:'middle'});
     }
   });
+
+  // optional footer: site link + QR code, centered in the bottom page margin
+  if(cfg.showFooter){
+    const qrSize = 10, m = qrSize/QR_MATRIX.length, gap = 3; // QR data area in mm
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    const groupW = qrSize + gap + doc.getTextWidth(SITE_URL);
+    const startX = (210 - groupW)/2;          // centre the QR + text group
+    const qrY = oy + gridH + 3;               // a few mm below the grid (white page = quiet zone)
+    doc.setFillColor(17,17,17);
+    for(let r=0;r<QR_MATRIX.length;r++){
+      const row = QR_MATRIX[r];
+      for(let c=0;c<row.length;c++)
+        if(row[c]==='1') doc.rect(startX + c*m, qrY + r*m, m, m, 'F');
+    }
+    doc.setTextColor(154,145,131); // #9a9183
+    doc.text(SITE_URL, startX + qrSize + gap, qrY + qrSize/2, {baseline:'middle'});
+  }
 }
 
 // number of cells a fixed field needs: the missing-operand box (opW) and the
@@ -1161,6 +1215,50 @@ function widthsFor(t){
   const [lo,hi]=t.range;
   return {opW: digitCount(hi), resW: (lo<0?1:0) + digitCount(hi)};
 }
+
+// ---- site link + QR code (shown in the optional page footer) --------------
+const SITE_URL = 'https://ksisu.github.io/math-worksheet-generator/';
+// Precomputed QR for SITE_URL (error-correction level M); each string is a row,
+// '1' = dark module. No quiet zone baked in — renderers leave a white margin.
+// Regenerate if SITE_URL changes (qrcode npm pkg, dev-only — not a dependency):
+//   node -e "const q=require('qrcode').create('<URL>',{errorCorrectionLevel:'M'});
+//   const s=q.modules.size,d=q.modules.data;let o=[];for(let r=0;r<s;r++){let x='';
+//   for(let c=0;c<s;c++)x+=d[r*s+c]?'1':'0';o.push(x);}console.log(o.join('\n'));"
+const QR_MATRIX = [
+  '111111100001101010111101101111111',
+  '100000100011000110100100001000001',
+  '101110101110001110011110001011101',
+  '101110101000000000110010101011101',
+  '101110101010101111001011001011101',
+  '100000101010011000110010101000001',
+  '111111101010101010101010101111111',
+  '000000001100101010011101100000000',
+  '101111100111011001010010001111100',
+  '011001000100110001110101001101111',
+  '100111101000011101000110011010110',
+  '001111000110010101110101110011111',
+  '110101100001001010001010010111001',
+  '011110011000010101100101001100111',
+  '111111110101111111001010011101010',
+  '001011001101111100000110011001100',
+  '011101110110000101100010010110001',
+  '110100001011011010111001001101101',
+  '101101110011011100101010010110110',
+  '110100000101010110001110111111101',
+  '111011100100111100100011110011000',
+  '111010011010100111001011001000001',
+  '100101100001110001010100101000110',
+  '100010011110100010011111011001110',
+  '101001111011111011011011111110000',
+  '000000001000110011111110100010111',
+  '111111100000101111000001101010110',
+  '100000101001000101100101100011111',
+  '101110101001000110010000111111011',
+  '101110101001110101100101010011111',
+  '101110101111001110001110111101100',
+  '100000100110001100011100010011100',
+  '111111101100100101010011110100010'
+];
 
 // ---- page geometry (cell fixed at 5 mm) -----------------------------------
 const CELL_MM = 5, USABLE_COLS = 38, GAP = 1, A4_WIDTH_MM = 210;
@@ -1201,6 +1299,7 @@ function readConfig(){
     divSymbol:      $('#divSymbol').value,
     alignOps:       $('#alignOps').checked,
     alignEq:        $('#alignEq').checked,
+    showFooter:     $('#showFooter').checked,
     marginLeft: 8,   // overridden below to centre the grid horizontally on the page
     marginTop: 14
   };
