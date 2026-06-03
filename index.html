@@ -60,7 +60,7 @@
     font-size:14px; transition:border-color .12s, background .12s;
   }
   .opt:hover{border-color:#c9bfab;}
-  .opt input{accent-color:var(--accent); width:16px; height:16px;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex-shrink:0;}
   .opt select{margin-left:auto; font-size:14px; padding:3px 6px; border:1px solid var(--line); border-radius:6px; background:#fff; cursor:pointer;}
   .opt.checked{border-color:var(--accent); background:#fff7f3;}
   .row{display:flex; gap:10px;}
@@ -911,6 +911,7 @@ function refreshDispOpts(){
   $('#gridWrap').classList.toggle('checked', $('#showGrid').checked);
   $('#alignOpsWrap').classList.toggle('checked', $('#alignOps').checked);
   $('#alignEqWrap').classList.toggle('checked', $('#alignEq').checked);
+  $('#footerWrap').classList.toggle('checked', $('#showFooter').checked);
 }
 $('#dispBtn').addEventListener('click', ()=>{ dispModal.hidden=false; refreshDispOpts(); });
 $('#dispDone').addEventListener('click', ()=>{ dispModal.hidden=true; });
