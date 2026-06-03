@@ -254,19 +254,30 @@
 <div class="app">
   <!-- ----- CONTROL PANEL ----- -->
   <aside class="panel">
-    <h1>Math Worksheet</h1>
-    <p class="sub">Set up the problems, then generate. Use the "Download PDF" button to save a PDF (A4 or A5).</p>
+    <h1 data-i18n="appTitle">Math Worksheet</h1>
+    <p class="sub" data-i18n="appSubtitle">Set up the problems, then generate. Use the "Download PDF" button to save a PDF (A4 or A5).</p>
 
     <div class="group">
-      <label class="lbl">Problem types</label>
-      <div id="typeRows"></div>
-      <p class="hint">Turn on the task types you want. Click a row to choose its times tables (<span id="hintOpSyms">·, :</span>) or number range (+, −). The worksheet mixes all enabled tasks.</p>
+      <label class="lbl" data-i18n="groupLanguage">Language</label>
+      <label class="amount-row">
+        <span data-i18n="labelLanguage">Language</span>
+        <select id="lang">
+          <option value="hu" selected>Magyar</option>
+          <option value="en">English</option>
+        </select>
+      </label>
     </div>
 
     <div class="group">
-      <label class="lbl">Layout</label>
+      <label class="lbl" data-i18n="groupProblemTypes">Problem types</label>
+      <div id="typeRows"></div>
+      <p class="hint" id="hintProblemTypes">Turn on the task types you want. Click a row to choose its times tables (<span id="hintOpSyms">·, :</span>) or number range (+, −). The worksheet mixes all enabled tasks.</p>
+    </div>
+
+    <div class="group">
+      <label class="lbl" data-i18n="groupLayout">Layout</label>
       <label class="amount-row">
-        <span>Page size</span>
+        <span data-i18n="labelPageSize">Page size</span>
         <select id="pageSize">
           <option value="a4" selected>A4 (210 × 297 mm)</option>
           <option value="a5">A5 (148 × 210 mm)</option>
@@ -274,30 +285,30 @@
       </label>
       <label class="amount-row">
         <input type="radio" name="amountMode" id="modeProblems">
-        <span>Number of problems</span>
+        <span data-i18n="labelNumProblems">Number of problems</span>
         <input type="number" id="count" value="100" min="1" max="1000" disabled>
       </label>
       <label class="amount-row">
         <input type="radio" name="amountMode" id="modeSheets" checked>
-        <span>Number of sheets</span>
+        <span data-i18n="labelNumSheets">Number of sheets</span>
         <input type="number" id="sheets" value="1" min="1" max="50">
       </label>
       <p class="hint" id="layoutInfo"></p>
-      <p class="hint">Squares are fixed at 5 mm; columns are chosen automatically to fill the page.</p>
+      <p class="hint" data-i18n="hintLayout">Squares are fixed at 5 mm; columns are chosen automatically to fill the page.</p>
     </div>
 
     <div class="group">
-      <button class="btn-ghost" id="dispBtn">Display options…</button>
+      <button class="btn-ghost" id="dispBtn" data-i18n="btnDisplayOptions">Display options…</button>
     </div>
 
     <div class="actions">
-      <button class="btn-primary" id="genBtn">Generate</button>
-      <button class="btn-ghost" id="pdfBtn">Download PDF</button>
+      <button class="btn-primary" id="genBtn" data-i18n="btnGenerate">Generate</button>
+      <button class="btn-ghost" id="pdfBtn" data-i18n="btnDownloadPDF">Download PDF</button>
     </div>
 
     <a class="repo" href="https://github.com/Ksisu/math-worksheet-generator" target="_blank" rel="noopener">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-      View source on GitHub
+      <span data-i18n="linkGitHub">View source on GitHub</span>
     </a>
   </aside>
 
@@ -314,8 +325,8 @@
     <p class="modal-sub" id="tblModalSub">Pick which tables to practise for this type.</p>
     <div class="table-grid" id="tblGrid"></div>
     <div class="modal-actions">
-      <button type="button" class="btn-ghost" id="tblSelectAll">Select all</button>
-      <button type="button" class="btn-primary" id="tblDone">Done</button>
+      <button type="button" class="btn-ghost" id="tblSelectAll" data-i18n="btnSelectAll">Select all</button>
+      <button type="button" class="btn-primary" id="tblDone" data-i18n="btnDone">Done</button>
     </div>
   </div>
 </div>
@@ -323,49 +334,49 @@
 <!-- ----- DISPLAY OPTIONS MODAL ----- -->
 <div id="dispModal" class="modal-overlay" hidden>
   <div class="modal-card">
-    <h2>Display options</h2>
+    <h2 data-i18n="modalDisplayTitle">Display options</h2>
     <label class="opt" id="operandBoxWrap">
       <input type="checkbox" id="showOperandBox" checked>
-      <span>Draw a box around the answer place (only when there is a missing factor/number)</span>
+      <span data-i18n="optOperandBox">Draw a box around the answer place (only when there is a missing factor/number)</span>
     </label>
     <label class="opt" id="resultBoxWrap">
       <input type="checkbox" id="showResultBox">
-      <span>Draw a box around the result place (only when that is the question)</span>
+      <span data-i18n="optResultBox">Draw a box around the result place (only when that is the question)</span>
     </label>
     <label class="opt" id="gridWrap">
       <input type="checkbox" id="showGrid" checked>
-      <span>Show grid</span>
+      <span data-i18n="optShowGrid">Show grid</span>
     </label>
     <label class="opt" id="mulSymWrap">
-      <span>Multiplication symbol</span>
+      <span data-i18n="labelMulSymbol">Multiplication symbol</span>
       <select id="mulSymbol">
-        <option value="·" selected>·&nbsp;&nbsp;(dot)</option>
-        <option value="×">×&nbsp;&nbsp;(cross)</option>
-        <option value="*">*&nbsp;&nbsp;(asterisk)</option>
+        <option value="·" selected data-i18n-sym="symDot">·&nbsp;&nbsp;(dot)</option>
+        <option value="×" data-i18n-sym="symCross">×&nbsp;&nbsp;(cross)</option>
+        <option value="*" data-i18n-sym="symAsterisk">*&nbsp;&nbsp;(asterisk)</option>
       </select>
     </label>
     <label class="opt" id="divSymWrap">
-      <span>Division symbol</span>
+      <span data-i18n="labelDivSymbol">Division symbol</span>
       <select id="divSymbol">
-        <option value=":" selected>:&nbsp;&nbsp;(colon)</option>
-        <option value="÷">÷&nbsp;&nbsp;(obelus)</option>
-        <option value="/">/&nbsp;&nbsp;(slash)</option>
+        <option value=":" selected data-i18n-sym="symColon">:&nbsp;&nbsp;(colon)</option>
+        <option value="÷" data-i18n-sym="symObelus">÷&nbsp;&nbsp;(obelus)</option>
+        <option value="/" data-i18n-sym="symSlash">/&nbsp;&nbsp;(slash)</option>
       </select>
     </label>
     <label class="opt" id="alignOpsWrap">
       <input type="checkbox" id="alignOps">
-      <span>Align the operators (+ − <span id="alignOpSyms">· :</span>) in a column</span>
+      <span id="alignOpsText">Align the operators (+ − <span id="alignOpSyms">· :</span>) in a column</span>
     </label>
     <label class="opt" id="alignEqWrap">
       <input type="checkbox" id="alignEq" checked>
-      <span>Align the = signs in a column</span>
+      <span data-i18n="optAlignEq">Align the = signs in a column</span>
     </label>
     <label class="opt" id="footerWrap">
       <input type="checkbox" id="showFooter" checked>
-      <span>Show a footer with the site link and a QR code</span>
+      <span data-i18n="optFooter">Show a footer with the site link and a QR code</span>
     </label>
     <div class="modal-actions">
-      <button type="button" class="btn-primary" id="dispDone">Done</button>
+      <button type="button" class="btn-primary" id="dispDone" data-i18n="btnDone">Done</button>
     </div>
   </div>
 </div>
@@ -760,6 +771,94 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 const $ = sel => document.querySelector(sel);
 const sheetsEl = $('#sheetsOut');
 
+// ---- i18n: every user-visible string, keyed by language ---------------------
+// English is the fallback; Hungarian is the default. The math examples (7 + 8 = __)
+// and operator glyphs are language-neutral and stay as-is.
+const I18N = {
+  en: {
+    appTitle:'Math Worksheet',
+    appSubtitle:'Set up the problems, then generate. Use the "Download PDF" button to save a PDF (A4 or A5).',
+    groupLanguage:'Language', labelLanguage:'Language',
+    groupProblemTypes:'Problem types',
+    hintProblemTypes:'Turn on the task types you want. Click a row to choose its times tables ({OPSYMS}) or number range (+, −). The worksheet mixes all enabled tasks.',
+    groupLayout:'Layout',
+    labelPageSize:'Page size',
+    labelNumProblems:'Number of problems',
+    labelNumSheets:'Number of sheets',
+    hintLayout:'Squares are fixed at 5 mm; columns are chosen automatically to fill the page.',
+    btnDisplayOptions:'Display options…',
+    btnGenerate:'Generate',
+    btnDownloadPDF:'Download PDF',
+    linkGitHub:'View source on GitHub',
+    modalTimesTitle:'Times tables',
+    btnSelectAll:'Select all', btnClearAll:'Clear all', btnDone:'Done',
+    modalDisplayTitle:'Display options',
+    optOperandBox:'Draw a box around the answer place (only when there is a missing factor/number)',
+    optResultBox:'Draw a box around the result place (only when that is the question)',
+    optShowGrid:'Show grid',
+    labelMulSymbol:'Multiplication symbol', labelDivSymbol:'Division symbol',
+    symDot:'(dot)', symCross:'(cross)', symAsterisk:'(asterisk)',
+    symColon:'(colon)', symObelus:'(obelus)', symSlash:'(slash)',
+    optAlignOps:'Align the operators (+ − {OPSYMS}) in a column',
+    optAlignEq:'Align the = signs in a column',
+    optFooter:'Show a footer with the site link and a QR code',
+    opAdd:'Addition', opSub:'Subtraction', opMul:'Multiplication', opDiv:'Division',
+    subResult:'fill in the result', subMissingNum:'missing number', subMissingFactor:'missing factor',
+    modalSubMul:'Pick which times tables to practise (the other factor is always 1–10).',
+    modalSubDiv:'Pick which times tables to practise — the products are divided by 1–10.',
+    modalSubRange:'Pick the number range — the answer stays within it.',
+    off:'off',
+    alertNoTask:'Turn on at least one task type — pick its times tables (·, :) or a number range (+, −).',
+    alertNoPDF:'PDF library not loaded. Run "npm install && npm run build" first to inline jsPDF.',
+    layoutEmpty:'Turn on a task type to see the layout.',
+    unitColumn:'column', unitColumns:'columns', unitPage:'page', unitPages:'pages',
+    unitProblem:'problem', unitProblems:'problems', perPage:'page', arrow:'→',
+  },
+  hu: {
+    appTitle:'Matek feladatlap',
+    appSubtitle:'Állítsd be a feladatokat, majd generálj. A „PDF letöltése” gombbal mentheted PDF-be (A4 vagy A5).',
+    groupLanguage:'Nyelv', labelLanguage:'Nyelv',
+    groupProblemTypes:'Feladattípusok',
+    hintProblemTypes:'Kapcsold be a kívánt feladattípusokat. Egy sorra kattintva választhatsz szorzótáblát ({OPSYMS}) vagy számtartományt (+, −). A feladatlap az összes bekapcsolt feladatot keveri.',
+    groupLayout:'Elrendezés',
+    labelPageSize:'Lapméret',
+    labelNumProblems:'Feladatok száma',
+    labelNumSheets:'Lapok száma',
+    hintLayout:'A négyzetek mérete fix 5 mm; az oszlopok számát automatikusan választjuk a lap kitöltéséhez.',
+    btnDisplayOptions:'Megjelenítési beállítások…',
+    btnGenerate:'Generálás',
+    btnDownloadPDF:'PDF letöltése',
+    linkGitHub:'Forráskód a GitHubon',
+    modalTimesTitle:'Szorzótáblák',
+    btnSelectAll:'Mind kijelöl', btnClearAll:'Mind töröl', btnDone:'Kész',
+    modalDisplayTitle:'Megjelenítési beállítások',
+    optOperandBox:'Keret rajzolása a válasz helye köré (csak ha hiányzó tényező/szám van)',
+    optResultBox:'Keret rajzolása az eredmény helye köré (csak ha az a kérdés)',
+    optShowGrid:'Rács megjelenítése',
+    labelMulSymbol:'Szorzás jele', labelDivSymbol:'Osztás jele',
+    symDot:'(pont)', symCross:'(kereszt)', symAsterisk:'(csillag)',
+    symColon:'(kettőspont)', symObelus:'(osztásjel)', symSlash:'(perjel)',
+    optAlignOps:'A műveleti jelek (+ − {OPSYMS}) oszlopba igazítása',
+    optAlignEq:'Az = jelek oszlopba igazítása',
+    optFooter:'Lábléc megjelenítése a webhely linkjével és QR-kóddal',
+    opAdd:'Összeadás', opSub:'Kivonás', opMul:'Szorzás', opDiv:'Osztás',
+    subResult:'írd be az eredményt', subMissingNum:'hiányzó szám', subMissingFactor:'hiányzó tényező',
+    modalSubMul:'Válaszd ki, mely szorzótáblákat gyakoroljátok (a másik tényező mindig 1–10).',
+    modalSubDiv:'Válaszd ki, mely szorzótáblákat gyakoroljátok — a szorzatokat 1–10-zel osztjuk.',
+    modalSubRange:'Válaszd ki a számtartományt — az eredmény ezen belül marad.',
+    off:'ki',
+    alertNoTask:'Kapcsolj be legalább egy feladattípust — válaszd ki a szorzótábláit (·, :) vagy egy számtartományt (+, −).',
+    alertNoPDF:'A PDF-könyvtár nincs betöltve. Először futtasd: „npm install && npm run build” a jsPDF beágyazásához.',
+    layoutEmpty:'Kapcsolj be egy feladattípust az elrendezés megtekintéséhez.',
+    // Hungarian nouns stay singular after a number, so the singular/plural keys coincide.
+    unitColumn:'oszlop', unitColumns:'oszlop', unitPage:'oldal', unitPages:'oldal',
+    unitProblem:'feladat', unitProblems:'feladat', perPage:'oldal', arrow:'→',
+  },
+};
+let lang = localStorage.getItem('mwg-lang') || 'hu';
+// translation lookup (named `tr`, not `t`, since `t` is used elsewhere as a task-object variable)
+const tr = k => (I18N[lang] && I18N[lang][k] != null) ? I18N[lang][k] : (I18N.en[k] != null ? I18N.en[k] : k);
+
 // ---- task types: one per (operation, variant) -----------------------------
 // Operation 'mul' practises chosen times tables; 'add'/'sub' practise a number
 // range (the answer stays within it). Each operation has a "fill in the result"
@@ -770,15 +869,16 @@ const RANGES = {
   add: [[0,10],[0,20],[0,100]],
   sub: [[0,10],[0,20],[0,100],[-10,10],[-20,20],[-100,100]],
 };
+// label/sub are i18n keys (opKey/subKey), resolved via t() at render time.
 const taskState = {
-  'add-res': {op:'add', variant:'result',  label:'Addition',       sub:'fill in the result', example:'7 + 8 = __',  range:[0,20]}, // default-on
-  'add-mis': {op:'add', variant:'missing',  label:'Addition',       sub:'missing number',     example:'7 + __ = 15', range:null},
-  'sub-res': {op:'sub', variant:'result',  label:'Subtraction',    sub:'fill in the result', example:'15 − 8 = __', range:null},
-  'sub-mis': {op:'sub', variant:'missing',  label:'Subtraction',    sub:'missing number',     example:'15 − __ = 7', range:null},
-  'mul-res': {op:'mul', variant:'result',  label:'Multiplication', sub:'fill in the result', example:'7 · 8 = __',  tables:new Set()},
-  'mul-mis': {op:'mul', variant:'missing',  label:'Multiplication', sub:'missing factor',     example:'__ · 8 = 56', tables:new Set()},
-  'div-res': {op:'div', variant:'result',  label:'Division',       sub:'fill in the result', example:'56 : 8 = __',  tables:new Set()},
-  'div-mis': {op:'div', variant:'missing',  label:'Division',       sub:'missing number',     example:'__ : 8 = 7',  tables:new Set()},
+  'add-res': {op:'add', variant:'result',  opKey:'opAdd', subKey:'subResult',        example:'7 + 8 = __',  range:[0,20]}, // default-on
+  'add-mis': {op:'add', variant:'missing',  opKey:'opAdd', subKey:'subMissingNum',    example:'7 + __ = 15', range:null},
+  'sub-res': {op:'sub', variant:'result',  opKey:'opSub', subKey:'subResult',        example:'15 − 8 = __', range:null},
+  'sub-mis': {op:'sub', variant:'missing',  opKey:'opSub', subKey:'subMissingNum',    example:'15 − __ = 7', range:null},
+  'mul-res': {op:'mul', variant:'result',  opKey:'opMul', subKey:'subResult',        example:'7 · 8 = __',  tables:new Set()},
+  'mul-mis': {op:'mul', variant:'missing',  opKey:'opMul', subKey:'subMissingFactor', example:'__ · 8 = 56', tables:new Set()},
+  'div-res': {op:'div', variant:'result',  opKey:'opDiv', subKey:'subResult',        example:'56 : 8 = __',  tables:new Set()},
+  'div-mis': {op:'div', variant:'missing',  opKey:'opDiv', subKey:'subMissingNum',    example:'__ : 8 = 7',  tables:new Set()},
 };
 
 // a task is "on" iff it has an operand selection (tables for ×, a range for +/−)
@@ -786,7 +886,7 @@ function taskActive(t){ return t.tables ? t.tables.size>0 : t.range!=null; }
 
 // summarise a table Set as "1–10" (contiguous) / "2, 5, 7" / "off"
 function summariseTables(set){
-  if(set.size===0) return 'off';
+  if(set.size===0) return tr('off');
   const a=[...set].sort((x,y)=>x-y);
   let contiguous=true;
   for(let i=1;i<a.length;i++){ if(a[i]!==a[i-1]+1){contiguous=false;break;} }
@@ -798,7 +898,7 @@ function rangeText(r){ return r[0]<0 ? `±${r[1]}` : `${r[0]}–${r[1]}`; }
 // chip summary for a task row
 function taskSummary(t){
   if(t.tables) return summariseTables(t.tables);
-  return t.range ? rangeText(t.range) : 'off';
+  return t.range ? rangeText(t.range) : tr('off');
 }
 
 // build / refresh the task-type rows in the panel
@@ -815,7 +915,7 @@ function renderTypeRows(){
     row.setAttribute('data-key', key); // the whole row opens the operand picker
     row.innerHTML=
       `<input type="checkbox" tabindex="-1" ${active?'checked':''}>`+
-      `<span class="type-text">${t.label} — ${t.sub}<small>${ex}</small></span>`+
+      `<span class="type-text">${tr(t.opKey)} — ${tr(t.subKey)}<small>${ex}</small></span>`+
       `<span class="tables-summary">${taskSummary(t)}</span>`;
     host.appendChild(row);
   }
@@ -823,10 +923,16 @@ function renderTypeRows(){
 // sync every UI text that shows an operator symbol to the current ×/÷ selection
 function refreshOpSymbolTexts(){
   const m = $('#mulSymbol').value, d = $('#divSymbol').value;
-  $('#hintOpSyms').textContent  = `${m}, ${d}`;
-  $('#alignOpSyms').textContent = `${m} ${d}`;
+  // these two strings embed the operator symbols via a {OPSYMS} placeholder; rebuild
+  // their innerHTML with a span holding the symbols so the text stays translatable
+  $('#hintProblemTypes').innerHTML = esc(tr('hintProblemTypes'))
+    .replace('{OPSYMS}', `<span id="hintOpSyms">${m}, ${d}</span>`);
+  $('#alignOpsText').innerHTML = esc(tr('optAlignOps'))
+    .replace('{OPSYMS}', `<span id="alignOpSyms">${m} ${d}</span>`);
   renderTypeRows(); // re-render the example lines with the current symbols
 }
+// escape HTML-special chars in a translated string before we inject it as innerHTML
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 refreshOpSymbolTexts();
 
 $('#typeRows').addEventListener('click', e=>{
@@ -843,19 +949,17 @@ function refreshOperandGrid(){
     l.classList.toggle('checked', l.querySelector('input').checked);
   });
   const t=taskState[modalKey];
-  if(t.tables) $('#tblSelectAll').textContent = (t.tables.size===TABLES.length) ? 'Clear all' : 'Select all';
+  if(t.tables) $('#tblSelectAll').textContent = (t.tables.size===TABLES.length) ? tr('btnClearAll') : tr('btnSelectAll');
 }
 function openOperandModal(key){
   modalKey=key;
   const t=taskState[key];
-  $('#tblModalTitle').textContent = `${t.label} — ${t.sub}`;
+  $('#tblModalTitle').textContent = `${tr(t.opKey)} — ${tr(t.subKey)}`;
   tblGrid.innerHTML='';
   if(t.tables){
     tblGrid.classList.remove('range-mode');
     $('#tblSelectAll').style.display='';
-    $('#tblModalSub').textContent = t.op==='div'
-      ? 'Pick which times tables to practise — the products are divided by 1–10.'
-      : 'Pick which times tables to practise (the other factor is always 1–10).';
+    $('#tblModalSub').textContent = t.op==='div' ? tr('modalSubDiv') : tr('modalSubMul');
     for(const n of TABLES){
       const lbl=document.createElement('label');
       lbl.innerHTML=`<input type="checkbox" value="${n}" ${t.tables.has(n)?'checked':''}> ${n}`;
@@ -864,12 +968,12 @@ function openOperandModal(key){
   } else {
     tblGrid.classList.add('range-mode');
     $('#tblSelectAll').style.display='none';
-    $('#tblModalSub').textContent = 'Pick the number range — the answer stays within it.';
+    $('#tblModalSub').textContent = tr('modalSubRange');
     for(const r of [null, ...RANGES[t.op]]){
       const lbl=document.createElement('label');
       const on = r===null ? t.range===null : (t.range && t.range[0]===r[0] && t.range[1]===r[1]);
       const val = r===null ? '' : `${r[0]},${r[1]}`;
-      lbl.innerHTML=`<input type="radio" name="opRange" value="${val}" ${on?'checked':''}> ${r===null?'off':rangeText(r)}`;
+      lbl.innerHTML=`<input type="radio" name="opRange" value="${val}" ${on?'checked':''}> ${r===null?tr('off'):rangeText(r)}`;
       tblGrid.appendChild(lbl);
     }
   }
@@ -1356,7 +1460,7 @@ let lastRender = [];
 function generate(){
   const cfg = readConfig();
   if(!cfg.types.length){
-    alert('Turn on at least one task type — pick its times tables (·, :) or a number range (+, −).');
+    alert(tr('alertNoTask'));
     return;
   }
   // keep the print paper size in sync with the chosen page size
@@ -1375,7 +1479,7 @@ function generate(){
 // build a real vector PDF of exactly what's on screen and trigger a download
 function downloadPDF(){
   if(!(window.jspdf && window.jspdf.jsPDF)){
-    alert('PDF library not loaded. Run "npm install && npm run build" first to inline jsPDF.');
+    alert(tr('alertNoPDF'));
     return;
   }
   if(!lastRender.length) generate();
@@ -1397,18 +1501,22 @@ function refreshLayoutInfo(){
   const types = Object.values(taskState).filter(taskActive).map(t=>{
     const w = widthsFor(t); return {opW:w.opW, resW:w.resW};
   });
-  if(!types.length){ $('#layoutInfo').textContent = 'Turn on a task type to see the layout.'; return; }
+  if(!types.length){ $('#layoutInfo').textContent = tr('layoutEmpty'); return; }
   const g = pageGeometry(types, {alignOps:$('#alignOps').checked, alignEq:$('#alignEq').checked}, PAGE_SIZES[$('#pageSize').value]||PAGE_SIZES.a4);
+  // count + noun, with the noun pluralised only where the language pluralises (English yes, Hungarian no)
+  const nCol = n => `${n} ${tr(n>1?'unitColumns':'unitColumn')}`;
+  const nPage = n => `${n} ${tr(n>1?'unitPages':'unitPage')}`;
+  const nProblem = n => `${n} ${tr(n>1?'unitProblems':'unitProblem')}`;
   let amount;
   if(byProblems){
     const total = Math.max(1, parseInt($('#count').value)||100);
     const pages = Math.ceil(total/g.perPage);
-    amount = `${total} problem${total>1?'s':''} → ${pages} page${pages>1?'s':''}`;
+    amount = `${nProblem(total)} ${tr('arrow')} ${nPage(pages)}`;
   } else {
     const pages = Math.max(1, parseInt($('#sheets').value)||1);
-    amount = `${pages} page${pages>1?'s':''} → ${pages*g.perPage} problems`;
+    amount = `${nPage(pages)} ${tr('arrow')} ${nProblem(pages*g.perPage)}`;
   }
-  $('#layoutInfo').textContent = `${g.cols} column${g.cols>1?'s':''} · ${g.perPage} / page · ${amount}`;
+  $('#layoutInfo').textContent = `${nCol(g.cols)} · ${g.perPage} / ${tr('perPage')} · ${amount}`;
 }
 // auto-regenerate on any parameter change (silent when no task type is on, to
 // avoid the empty-config alert firing repeatedly while editing)
@@ -1446,8 +1554,26 @@ $('#sheets').addEventListener('change', autoGenerate);
 $('#genBtn').addEventListener('click', generate);
 $('#pdfBtn').addEventListener('click', downloadPDF);
 
-refreshLayoutInfo();
-generate();
+// ---- language: translate the whole UI, then re-render dynamic parts ---------
+function applyLanguage(){
+  document.documentElement.lang = lang;
+  $('#lang').value = lang;
+  // simple static text nodes
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = tr(el.dataset.i18n); });
+  // ×/÷ symbol options: keep the leading glyph, translate the parenthetical word
+  document.querySelectorAll('[data-i18n-sym]').forEach(opt=>{ opt.textContent = `${opt.value}  ${tr(opt.dataset.i18nSym)}`; });
+  refreshOpSymbolTexts(); // rebuilds the two composite hint texts + re-renders the type rows
+  refreshOperandGrid();   // keep the Select all / Clear all label in sync if a modal is open
+  refreshLayoutInfo();    // re-render the live layout summary
+  if(Object.values(taskState).some(taskActive)) generate(); // refresh the preview
+}
+$('#lang').addEventListener('change', ()=>{
+  lang = $('#lang').value;
+  localStorage.setItem('mwg-lang', lang);
+  applyLanguage();
+});
+
+applyLanguage();
 </script>
 </body>
 </html>
